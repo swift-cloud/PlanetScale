@@ -5,7 +5,12 @@ import PackageDescription
 let package = Package(
     name: "Planetscale",
     platforms: [
-        .macOS(.v13)
+        .macOS(.v11),
+        .iOS(.v13),
+        .tvOS(.v13),
+        .watchOS(.v9),
+        .driverKit(.v22),
+        .macCatalyst(.v13)
     ],
     products: [
         .library(name: "Planetscale", targets: ["Planetscale"]),
