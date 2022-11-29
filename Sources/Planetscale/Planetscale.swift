@@ -48,6 +48,9 @@ public actor PlanetscaleClient {
             cacheKey: buildCacheKey(query)
         ))
 
+        print("[planetscale] execute: x-cache - ", res.headers[HTTPHeader.xCache.rawValue] ?? "(null)")
+        print("[planetscale] execute: x-cache-hits - ", res.headers[HTTPHeader.xCacheHits.rawValue] ?? "(null)")
+
         // Decode the session
         let response: ExecuteResponse = try await res.decode()
 
