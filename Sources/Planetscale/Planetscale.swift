@@ -106,8 +106,9 @@ public actor PlanetscaleClient {
 
     private func buildCacheKey(_ query: PlanetscaleQuery) -> String? {
         switch query.cachePolicy {
-        case .ttl:
-            return "\(username).\(query.sql.trimmingCharacters(in: .whitespacesAndNewlines).base64Encoded())"
+        case let .ttl(ttl, swr, pci):
+            let key = query.sql.trimmingCharacters(in: .whitespacesAndNewlines).base64Encoded()
+            return "\(username).\(ttl).\(swr).\(pci).\(key)"
         default:
             return nil
         }
