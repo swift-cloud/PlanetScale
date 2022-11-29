@@ -65,6 +65,10 @@ public actor PlanetscaleClient {
         }
     }
 
+    public func boost(enabled: Bool = true) async throws {
+        try await execute("SET @@boost_cached_queries = \(enabled);")
+    }
+
     public func refresh() async throws -> QuerySession {
         // Request a new session
         let res = try await fetch("\(baseURL)/CreateSession", .options(
