@@ -3,6 +3,17 @@ import Foundation
 
 private let baseURL = "https://aws.connect.psdb.cloud/psdb.v1alpha1.Database"
 
+public struct PlanetscaleQuery {
+    public let sql: String
+
+    public let cachePolicy: CachePolicy
+
+    public init(_ sql: String, cachePolicy: CachePolicy = .origin) {
+        self.sql = sql
+        self.cachePolicy = cachePolicy
+    }
+}
+
 public actor PlanetscaleClient {
 
     private let username: String
@@ -19,15 +30,22 @@ public actor PlanetscaleClient {
     }
 
     @discardableResult
-    public func execute(_ query: String) async throws -> QueryResult {
+    public func execute(_ sql: String, cachePolicy: CachePolicy = .origin) async throws -> QueryResult {
+        return try await execute(.init(sql, cachePolicy: cachePolicy))
+    }
+
+    @discardableResult
+    public func execute(_ query: PlanetscaleQuery) async throws -> QueryResult {
         // Build request
-        let req = ExecuteRequest(query: query, session: session)
+        let req = ExecuteRequest(query: query.sql, session: session)
 
         // Request a new session
         let res = try await fetch("\(baseURL)/Execute", .options(
             method: .post,
             body: .json(req),
-            headers: [HTTPHeader.authorization.rawValue: basicAuthorizationHeader]
+            headers: [HTTPHeader.authorization.rawValue: basicAuthorizationHeader],
+            cachePolicy: query.cachePolicy,
+            cacheKey: buildCacheKey(query)
         ))
 
         // Decode the session
@@ -84,6 +102,15 @@ public actor PlanetscaleClient {
         self.session = data.session
 
         return data
+    }
+
+    private func buildCacheKey(_ query: PlanetscaleQuery) -> String? {
+        switch query.cachePolicy {
+        case .ttl:
+            return "\(username).\(query.sql.trimmingCharacters(in: .whitespacesAndNewlines).base64Encoded())"
+        default:
+            return nil
+        }
     }
 
     private func buildBasicAuthorizationHeader() -> String {
