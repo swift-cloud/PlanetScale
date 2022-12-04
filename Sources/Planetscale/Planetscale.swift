@@ -129,8 +129,11 @@ extension PlanetscaleClient.QueryResult {
 
     public func decode<T: Decodable>() throws -> [T] {
         let values = json()
-        let data = try JSONSerialization.data(withJSONObject: values)
-        return try JSONDecoder().decode([T].self, from: data)
+        let decoder = JSONDecoder()
+        return try values.map {
+            let data = try JSONSerialization.data(withJSONObject: $0)
+            return try decoder.decode(T.self, from: data)
+        }
     }
 
     public func json() -> [[String: Any]] {
