@@ -1,6 +1,6 @@
-# Planetscale
+# PlanetScale
 
-A [Planetscale](https://planetscale.com) library compatible with all Apple platforms, Swift Cloud and Fastly Compute@Edge
+A [PlanetScale](https://planetscale.com) library compatible with all Apple platforms, Swift Cloud and Fastly Compute@Edge
 
 ## Usage
 
