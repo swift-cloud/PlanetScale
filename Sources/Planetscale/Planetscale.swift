@@ -128,11 +128,20 @@ extension PlanetscaleClient {
 extension PlanetscaleClient.QueryResult {
 
     public func decode<T: Decodable>() throws -> [T] {
-        let values = json()
-        let decoder = JSONDecoder()
-        return try values.map {
-            let data = try JSONSerialization.data(withJSONObject: $0)
-            return try decoder.decode(T.self, from: data)
+        return try decode(T.self)
+    }
+
+    public func decode<T: Decodable>(_ type: T.Type) throws -> [T] {
+        guard let rows = rows else {
+            return []
+        }
+        guard let fields = fields else {
+            return []
+        }
+        return try rows.map {
+            let json = $0.json(fields)
+            let data = try JSONSerialization.data(withJSONObject: json)
+            return try JSONDecoder().decode(type, from: data)
         }
     }
 
@@ -143,15 +152,17 @@ extension PlanetscaleClient.QueryResult {
         guard let fields = fields else {
             return rows.map { _ in [:] }
         }
-        return rows.map { row in
-            return fields.enumerated().reduce(into: [:]) { dict, item in
-                dict[item.element.name] = item.element.cast(value: row.decode()[item.offset])
-            }
-        }
+        return rows.map { $0.json(fields) }
     }
 }
 
 extension PlanetscaleClient.QueryResult.Row {
+
+    public func json(_ fields: [PlanetscaleClient.QueryResult.Field]) -> [String: Any] {
+        return fields.enumerated().reduce(into: [:]) { dict, item in
+            dict[item.element.name] = item.element.cast(value: decode()[item.offset])
+        }
+    }
 
     public func decode() -> [String?] {
         let data = values?.base64Decoded() ?? ""
