@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Planetscale",
+    name: "PlanetScale",
     platforms: [
         .macOS(.v11),
         .iOS(.v13),
@@ -13,12 +13,12 @@ let package = Package(
         .macCatalyst(.v13)
     ],
     products: [
-        .library(name: "Planetscale", targets: ["Planetscale"]),
+        .library(name: "PlanetScale", targets: ["PlanetScale"]),
     ],
     dependencies: [
          .package(url: "https://github.com/swift-cloud/Compute", from: "2.0.0")
     ],
     targets: [
-        .target(name: "Planetscale", dependencies: ["Compute"])
+        .target(name: "PlanetScale", dependencies: ["Compute"])
     ]
 )

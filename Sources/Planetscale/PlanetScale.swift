@@ -3,7 +3,7 @@ import Foundation
 
 private let baseURL = "https://aws.connect.psdb.cloud/psdb.v1alpha1.Database"
 
-public actor PlanetscaleClient {
+public actor PlanetScaleClient {
 
     private let username: String
 
@@ -45,9 +45,9 @@ public actor PlanetscaleClient {
     }
 
     @discardableResult
-    public func transaction<T>(_ handler: (PlanetscaleClient) async throws -> T) async throws -> T {
+    public func transaction<T>(_ handler: (PlanetScaleClient) async throws -> T) async throws -> T {
         // Create a new client for the transaction
-        let tx = PlanetscaleClient(username: username, password: password)
+        let tx = PlanetScaleClient(username: username, password: password)
         do {
             // Begin the transaction
             try await tx.execute("BEGIN")
@@ -92,7 +92,7 @@ public actor PlanetscaleClient {
     }
 }
 
-extension PlanetscaleClient {
+extension PlanetScaleClient {
     public struct ExecuteResponse: Codable {
         public let session: QuerySession.Session
         public let result: QueryResult?
@@ -105,7 +105,7 @@ extension PlanetscaleClient {
     }
 }
 
-extension PlanetscaleClient {
+extension PlanetScaleClient {
     public struct QueryResult: Codable {
         public struct Row: Codable {
             public let lengths: [String]
@@ -125,7 +125,7 @@ extension PlanetscaleClient {
     }
 }
 
-extension PlanetscaleClient.QueryResult {
+extension PlanetScaleClient.QueryResult {
 
     public func decode<T: Decodable>() throws -> [T] {
         return try decode(T.self)
@@ -156,9 +156,9 @@ extension PlanetscaleClient.QueryResult {
     }
 }
 
-extension PlanetscaleClient.QueryResult.Row {
+extension PlanetScaleClient.QueryResult.Row {
 
-    public func json(_ fields: [PlanetscaleClient.QueryResult.Field]) -> [String: Any] {
+    public func json(_ fields: [PlanetScaleClient.QueryResult.Field]) -> [String: Any] {
         return fields.enumerated().reduce(into: [:]) { dict, item in
             dict[item.element.name] = item.element.cast(value: decode()[item.offset])
         }
@@ -179,7 +179,7 @@ extension PlanetscaleClient.QueryResult.Row {
     }
 }
 
-extension PlanetscaleClient.QueryResult.Field {
+extension PlanetScaleClient.QueryResult.Field {
 
     public func cast(value: String?) -> Any? {
         guard let value = value else {
@@ -219,14 +219,14 @@ extension PlanetscaleClient.QueryResult.Field {
     }
 }
 
-extension PlanetscaleClient {
+extension PlanetScaleClient {
     public struct VitessError: Codable, Error {
         public let message: String
         public let code: String
     }
 }
 
-extension PlanetscaleClient {
+extension PlanetScaleClient {
     public struct QuerySession: Codable {
         public struct User: Codable {
             public let username: String

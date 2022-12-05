@@ -5,7 +5,7 @@ A [PlanetScale](https://planetscale.com) library compatible with all Apple platf
 ## Usage
 
 ```swift
-let client = PlanetscaleClient(username: "...", password: "...")
+let client = PlanetScaleClient(username: "...", password: "...")
 
 let rows = try await client.execute("select * from customers limit 10").json()
 ```

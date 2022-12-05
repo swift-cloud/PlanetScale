@@ -1,11 +1,11 @@
 import XCTest
-@testable import Planetscale
+@testable import PlanetScale
 
-final class PlanetscaleTests: XCTestCase {
+final class PlanetScaleTests: XCTestCase {
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(Planetscale().text, "Hello, World!")
+        XCTAssertEqual(PlanetScale().text, "Hello, World!")
     }
 }
