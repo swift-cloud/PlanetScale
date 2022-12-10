@@ -138,8 +138,8 @@ extension PlanetScaleClient.QueryResult {
         guard let fields = fields else {
             return []
         }
-        return try rows.map {
-            let json = $0.json(fields)
+        return try rows.map { row in
+            let json = row.json(fields)
             let data = try JSONSerialization.data(withJSONObject: json)
             return try JSONDecoder().decode(type, from: data)
         }
@@ -152,15 +152,18 @@ extension PlanetScaleClient.QueryResult {
         guard let fields = fields else {
             return rows.map { _ in [:] }
         }
-        return rows.map { $0.json(fields) }
+        return rows.map { row in
+            row.json(fields)
+        }
     }
 }
 
 extension PlanetScaleClient.QueryResult.Row {
 
     public func json(_ fields: [PlanetScaleClient.QueryResult.Field]) -> [String: Any] {
+        let values = decode()
         return fields.enumerated().reduce(into: [:]) { dict, item in
-            dict[item.element.name] = item.element.cast(value: decode()[item.offset])
+            dict[item.element.name] = item.element.cast(value: values[item.offset])
         }
     }
 
