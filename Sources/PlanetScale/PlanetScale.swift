@@ -163,7 +163,8 @@ extension PlanetScaleClient.QueryResult.Row {
     public func json(_ fields: [PlanetScaleClient.QueryResult.Field]) -> [String: Any] {
         let values = decode()
         return fields.enumerated().reduce(into: [:]) { dict, item in
-            dict[item.element.name] = item.element.cast(value: values[item.offset])
+            let value = values[item.offset]
+            dict[item.element.name] = item.element.cast(value: value)
         }
     }
 

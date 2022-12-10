@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-cloud/Compute",
       "state" : {
-        "revision" : "4a711919bb69f548816256d12e4f77f564ab7539",
-        "version" : "2.0.0"
+        "revision" : "429e394301865712f4872287bc55252df389cac3",
+        "version" : "2.7.0"
       }
     },
     {
