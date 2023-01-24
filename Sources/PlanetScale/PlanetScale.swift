@@ -94,7 +94,7 @@ public actor PlanetScaleClient {
 
 extension PlanetScaleClient {
     public struct ExecuteResponse: Codable {
-        public let session: QuerySession.Session?
+        public let session: QuerySession.Session
         public let result: QueryResult?
         public let error: VitessError?
     }
