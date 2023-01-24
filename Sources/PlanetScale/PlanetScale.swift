@@ -3,6 +3,11 @@ import Foundation
 
 private let baseURL = "https://aws.connect.psdb.cloud/psdb.v1alpha1.Database"
 
+public enum PlanetScaleError: Error, Sendable {
+    case executeError(error: PlanetScaleClient.VitessError, response: PlanetScaleClient.ExecuteResponse)
+    case requestFailed(response: FetchResponse)
+}
+
 public actor PlanetScaleClient {
 
     private let username: String
@@ -30,6 +35,11 @@ public actor PlanetScaleClient {
             headers: [HTTPHeader.authorization.rawValue: basicAuthorizationHeader]
         ))
 
+        // Ensure successful response
+        guard res.status == HTTPStatus.ok.rawValue else {
+            throw PlanetScaleError.requestFailed(response: res)
+        }
+
         // Decode the session
         let response: ExecuteResponse = try await res.decode()
 
@@ -38,7 +48,7 @@ public actor PlanetScaleClient {
 
         // Check for an error
         if let error = response.error {
-            throw error
+            throw PlanetScaleError.executeError(error: error, response: response)
         }
 
         return response.result!
@@ -77,6 +87,11 @@ public actor PlanetScaleClient {
             headers: [HTTPHeader.authorization.rawValue: basicAuthorizationHeader]
         ))
 
+        // Ensure successful response
+        guard res.status == HTTPStatus.ok.rawValue else {
+            throw PlanetScaleError.requestFailed(response: res)
+        }
+
         // Decode the session
         let data: QuerySession = try await res.decode()
 
@@ -93,26 +108,26 @@ public actor PlanetScaleClient {
 }
 
 extension PlanetScaleClient {
-    public struct ExecuteResponse: Codable {
+    public struct ExecuteResponse: Codable, Sendable {
         public let session: QuerySession.Session
         public let result: QueryResult?
         public let error: VitessError?
     }
 
-    public struct ExecuteRequest: Codable {
+    public struct ExecuteRequest: Codable, Sendable {
         public let query: String
         public let session: QuerySession.Session?
     }
 }
 
 extension PlanetScaleClient {
-    public struct QueryResult: Codable {
-        public struct Row: Codable {
+    public struct QueryResult: Codable, Sendable {
+        public struct Row: Codable, Sendable {
             public let lengths: [String]
             public let values: String?
         }
 
-        public struct Field: Codable {
+        public struct Field: Codable, Sendable {
             public let name: String
             public let type: String
             public let table: String?
@@ -224,7 +239,7 @@ extension PlanetScaleClient.QueryResult.Field {
 }
 
 extension PlanetScaleClient {
-    public struct VitessError: Codable, Error {
+    public struct VitessError: Codable, Sendable, Error {
         public let message: String
         public let code: String
     }
@@ -232,15 +247,15 @@ extension PlanetScaleClient {
 
 extension PlanetScaleClient {
     public struct QuerySession: Codable {
-        public struct User: Codable {
+        public struct User: Codable, Sendable {
             public let username: String
             public let psid: String
             public let role: String
         }
 
-        public struct Session: Codable {
-            public struct VitessSession: Codable {
-                public struct Options: Codable {
+        public struct Session: Codable, Sendable {
+            public struct VitessSession: Codable, Sendable {
+                public struct Options: Codable, Sendable {
                     public let includedFields: String
                     public let clientFoundRows: Bool
                 }
